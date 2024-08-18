@@ -8,6 +8,7 @@ import Register from './pages/Register'
 import Logout from './pages/Logout'
 import Error from './pages/Error'
 import Navbar from './components/Navbar'
+import ForgotPassword from './pages/ForgotPassword'
 
 function App() {
 
@@ -22,6 +23,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/logout" element={<Logout />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="*" element={<Error/>}/>
       </Routes>
     </BrowserRouter>

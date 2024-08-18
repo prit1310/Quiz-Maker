@@ -23,7 +23,7 @@ app.use(cors(corsOptions));
 app.use('/api/auth', authRoute);
 app.use('/api', queRoute);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5001;
 
 // Resolve dirname using CommonJS
 app.use(express.static(path.join(__dirname, '/client/dist')));
