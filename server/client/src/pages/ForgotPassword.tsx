@@ -9,7 +9,7 @@ const ForgotPassword = () => {
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:5001/api/auth/forgot-password", {
+      const response = await fetch("/api/auth/forgot-password", {
         method: "POST",
         headers: {
           'Content-Type': 'application/json',
