@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Spinner from './Spinner';
 
 // Define the type for a question
 interface Question {
@@ -128,7 +129,7 @@ const QuizPlay = () => {
               </div>
             </div>
           ) : (
-            <p className="text-lg">Loading...</p>
+            <Spinner />
           )}
         </div>
       )}
