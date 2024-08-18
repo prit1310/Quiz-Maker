@@ -109,7 +109,7 @@ const forgotPassword = async (req, res) => {
     user.resetPasswordToken = resetToken;
     await user.save();
 
-    const resetLink = `http://localhost:5001/reset-password?token=${resetToken}`;
+    const resetLink = `https://quiz-maker-97c6.onrender.com/reset-password?token=${resetToken}`;
 
     const transporter = nodemailer.createTransport({
       service: 'gmail',
