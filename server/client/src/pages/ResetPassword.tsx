@@ -20,7 +20,7 @@ const ResetPassword: React.FC = () => {
     }
   
     try {
-      await axios.post('/api/auth/reset-password', {
+      await axios.post('/api/auth/reset-password', { //proxy server called
         token,
         newPassword,
       });
