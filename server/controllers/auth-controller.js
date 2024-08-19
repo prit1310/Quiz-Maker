@@ -5,7 +5,6 @@ const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 
-
 const home = async (req, res) => {
   try {
     res.status(200).json({ message: 'Welcome to the project' });
@@ -16,42 +15,35 @@ const home = async (req, res) => {
 
 const register = async (req, res) => {
   try {
-    // Destructure request body
     const { username, email, phone, password } = req.body;
 
-    // Check if the user already exists
     const userExist = await User.findOne({ email });
 
     if (userExist) {
       return res.status(400).json({ message: 'Email already exists' });
     }
 
-    // Hash the password
-    const saltRound = 10;
-    const hash_password = await bcrypt.hash(password, saltRound);
+    // Hash password before saving
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    // Create new user
+    // Create user with hashed password
     const userCreate = await User.create({
       username,
       email,
       phone,
-      password: hash_password,
+      password: hashedPassword, // Use hashed password
     });
 
-    // Generate token
     const token = await userCreate.generateToken();
 
-    // Send response
     return res.status(201).json({
       message: 'Registration successful',
       token,
       userId: userCreate._id.toString(),
     });
   } catch (error) {
-    // Log the error for debugging
     console.error('Error in register function:', error);
-
-    // Send error response
     return res.status(500).json({
       message: 'Internal server error',
       error: error.message,
@@ -103,8 +95,9 @@ const forgotPassword = async (req, res) => {
       return res.status(400).json({ message: 'User not found' });
     }
 
+    
     const token = crypto.randomBytes(32).toString('hex');
-    const resetToken = jwt.sign({ token }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
+    const resetToken = jwt.sign({ token }, process.env.JWT_SECRET_KEY, { expiresIn: '30m' });
 
     user.resetPasswordToken = resetToken;
     await user.save();
@@ -127,10 +120,10 @@ const forgotPassword = async (req, res) => {
         name: 'Prit Senjaliya',
         address: process.env.EMAIL,
       },
-      to: email, 
+      to: email,
       subject: "Reset Password ✔",
       text: "Reset password",
-      html: `Reset password link: <a href="${resetLink}">${resetLink}</a>`,
+      html: `Reset password link: <a href="${resetLink}">${resetLink}</a><br><br><b>The link will expire after one use</b>`,
     };
 
     transporter.sendMail(mailOptions, (error) => {
@@ -142,24 +135,22 @@ const forgotPassword = async (req, res) => {
     });
 
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
-
 
 const resetPassword = async (req, res) => {
   const { token, newPassword } = req.body;
 
   try {
-    // Verify the token and decode it
+    // Verify the reset token
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
-    // Ensure the token is valid and extract any necessary information
     if (!decoded || !decoded.token) {
       return res.status(400).json({ message: 'Invalid or expired token' });
     }
 
-    // Find the user by the reset token
+    // Find the user with the matching reset token
     const user = await User.findOne({ resetPasswordToken: token });
 
     if (!user) {
@@ -167,19 +158,19 @@ const resetPassword = async (req, res) => {
     }
 
     // Hash the new password before saving
-    const saltRound = 10;
-    const hashedPassword = await bcrypt.hash(newPassword, saltRound);
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
 
     // Update the user's password and clear the reset token
-    user.password = hashedPassword;
+    user.password = hashedPassword; // Use hashed password
     user.resetPasswordToken = undefined;
-    await user.save();
+    await user.save(); // Save the updated user data
 
     res.json({ message: 'Password reset successful' });
   } catch (error) {
+    console.error('Error in resetPassword function:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
-
 
 module.exports = { home, register, login, user, forgotPassword, resetPassword };

@@ -9,6 +9,7 @@ import Logout from './pages/Logout'
 import Error from './pages/Error'
 import Navbar from './components/Navbar'
 import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
 
 function App() {
 
@@ -24,6 +25,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/logout" element={<Logout />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="*" element={<Error/>}/>
       </Routes>
     </BrowserRouter>

@@ -1,66 +1,24 @@
-require('dotenv').config();
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs'); // Make sure bcrypt is imported
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const userSchema = new mongoose.Schema({
-    username: {
-        type: String,
-        required: true,
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-    phone: {
-        type: String,
-        required: true,
-    },
-    password: {
-        type: String,
-        required: true,
-    },
-    isAdmin: {
-        type: Boolean,
-        default: false,
-    }
-});
+  username: String,
+  email: { type: String, unique: true },
+  phone: String,
+  password: { type: String, required: true },
+  resetPasswordToken: String,
+}, { timestamps: true });
 
-// JSON Web Token secret key
-const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
-
-// Method to generate JWT token
-userSchema.methods.generateToken = function() {
-    try {
-        return jwt.sign(
-            {
-                userId: this._id.toString(),
-                email: this.email,
-                isAdmin: this.isAdmin,
-            },
-            JWT_SECRET_KEY,
-            { expiresIn: "30d" }
-        );
-    } catch (error) {
-        console.error(error);
-    }
+// Compare passwords
+userSchema.methods.comparePassword = async function (password) {
+  return bcrypt.compare(password, this.password);
 };
 
-// Pre-save hook to hash the password
-userSchema.pre('save', async function(next) {
-    if (!this.isModified('password')) {
-        return next();
-    }
-    try {
-        const salt = await bcrypt.genSalt(10);
-        this.password = await bcrypt.hash(this.password, salt);
-        next();
-    } catch (error) {
-        next(error);
-    }
-});
+// Generate JWT token
+userSchema.methods.generateToken = function () {
+  return jwt.sign({ id: this._id }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
+};
 
-const User = mongoose.model("User", userSchema);
-
+const User = mongoose.model('User', userSchema);
 module.exports = User;
