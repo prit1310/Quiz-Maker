@@ -7,9 +7,14 @@ const Navbar = () => {
   return (
     <header className="fixed bottom-0 w-full bg-gray-800 text-white shadow-lg z-50">
       <div className="container mx-auto flex justify-between items-center p-4">
-        <div className="text-xl font-bold">
-          <NavLink to="#" className="hover:text-gray-400">
-            Quiz Maker
+      <div className="flex items-center space-x-4">
+          <NavLink to="/" className="flex items-center">
+            <img 
+              src="/logo.png" 
+              alt="Quiz Maker" 
+              className="h-8 w-auto" 
+            />
+            <span className="ml-2 text-xl font-bold">QuizMaker</span>
           </NavLink>
         </div>
         <nav>
